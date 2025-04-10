@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 struct partition {
     int start;
@@ -34,6 +36,12 @@ void *find_primes(void *param) {
     pthread_exit(NULL);
 }
 
+long measure_cpu_time() {
+    struct rusage usage;
+    getrusage(RUSAGE_SELF, &usage);
+    return (usage.ru_utime.tv_sec * 1000000LL + usage.ru_utime.tv_usec);
+}
+
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <integer>\n", argv[0]);
@@ -57,6 +65,9 @@ int main(int argc, char *argv[]) {
 
     struct partition partitions[num_threads];
     int start = 2;
+
+    long start_cpu = measure_cpu_time();
+
     for (int i = 0; i < num_threads; i++) {
         partitions[i].start = start;
         partitions[i].end = start + partition_size - 1;
@@ -83,6 +94,10 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    long end_cpu = measure_cpu_time();
+    long cpu_time_us = end_cpu - start_cpu;
+
     pthread_attr_destroy(&attr);
+    printf("\nCPU time used: %ld microseconds\n", cpu_time_us);
     return 0;
 }
