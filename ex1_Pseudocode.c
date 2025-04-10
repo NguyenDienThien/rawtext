@@ -1,9 +1,11 @@
 // 2021 June 2
 // Author: Abraham Silberschatz  in book Operating System Concepts 8th Edition p.170
 // Demo using how to speed up sum of sequence integer.
-#include<pthread.h>
-#include<stdio.h>
-#include<stdlib.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 int min, max; /* this data is shared by the thread(s) */
 float ave;
@@ -13,6 +15,12 @@ int size;
 void *average_runner(void *param); /* threads call this function */
 void *maximum_runner(void *param);
 void *minimum_runner(void *param);
+
+long measure_cpu_time() {
+    struct rusage usage;
+    getrusage(RUSAGE_SELF, &usage);
+    return (usage.ru_utime.tv_sec * 1000000LL + usage.ru_utime.tv_usec);
+}
 
 int main(int argc, char *argv[]) {
     if (argc <= 1) {
@@ -37,6 +45,8 @@ int main(int argc, char *argv[]) {
 
     /* set the default attributes of the thread */
     pthread_attr_init(&attr);
+
+    long start_cpu = measure_cpu_time();
 
     /* create the threads */
     if (pthread_create(&tid[0], &attr, average_runner, NULL) != 0) {
@@ -66,9 +76,13 @@ int main(int argc, char *argv[]) {
         perror("Failed to join minimum thread");
     }
 
+    long end_cpu = measure_cpu_time();
+    long cpu_time_us = end_cpu - start_cpu;
+
     printf("The average value is: %.2f\n", ave);
     printf("The maximum value is: %d\n", max);
     printf("The minimum value is: %d\n", min);
+    printf("\nCPU time used: %ld microseconds\n", cpu_time_us);
 
     free(a); // Free the dynamically allocated memory
     return 0;
