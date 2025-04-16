@@ -82,3 +82,4 @@ echo [OK] Cai dat hoan tat!
 echo [OK] Miner se chay an khi may khoi dong.
 echo [Worker]: %RIG%
 pause
+
